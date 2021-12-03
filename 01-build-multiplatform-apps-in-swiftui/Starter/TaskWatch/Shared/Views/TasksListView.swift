@@ -35,9 +35,8 @@ import SwiftUI
 struct TasksListView: View {
   
   @FetchRequest(entity: TaskEntity.entity(), sortDescriptors: [NSSortDescriptor(keyPath: \TaskEntity.timestamp, ascending: false)], animation: .default)
-  private var tasks: FetchedResults<TaskEntity>
-  @State private var addingNewTask = false
-  let onSave: (String, Double) -> Void
+  var tasks: FetchedResults<TaskEntity>
+  @State var addingNewTask = false
   
   var body: some View {
     NavigationView {
@@ -52,20 +51,17 @@ struct TasksListView: View {
         }
         .buttonStyle(BorderlessButtonStyle())
         .sheet(isPresented: $addingNewTask) {
-          NewTaskView(isPresented: $addingNewTask) { title, duration in
-            onSave(title, duration)
-          }
+          NewTaskView(isPresented: $addingNewTask)
         }
         
         TaskRowsView(data: tasks.map(Task.init))
       }
-      .navigationTitle("Tasks")
     }
   }
 }
 
 struct TasksListView_Previews: PreviewProvider {
   static var previews: some View {
-    TasksListView() { _, _ in }
+    TasksListView()
   }
 }

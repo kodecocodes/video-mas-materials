@@ -37,7 +37,7 @@ struct NewTaskView: View {
   @State var taskTitle: String = ""
   @State var duration: Int?
   @Binding var isPresented: Bool
-  let onSave: (String, Double) -> Void
+  @EnvironmentObject var persistenceController: PersistenceController
   
   let numberFormatter: NumberFormatter = {
     let formatter = NumberFormatter()
@@ -71,7 +71,7 @@ extension NewTaskView {
   
   func save() {
     if let duration = duration {
-      onSave(taskTitle, Double(duration))
+      persistenceController.save(title: taskTitle, duration: Double(duration))
       isPresented = false
     }
   }
@@ -93,8 +93,7 @@ struct NewTaskView_Previews: PreviewProvider {
   static var previews: some View {
     NewTaskView(taskTitle: "Buy Milk",
                 duration: 60,
-                isPresented: .constant(true),
-                onSave: { _, _ in }
+                isPresented: .constant(true)
     )
   }
 }

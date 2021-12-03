@@ -33,7 +33,7 @@
 import Foundation
 import CoreData
 
-final class PersistenceController {
+final class PersistenceController: ObservableObject {
   
   static let shared = PersistenceController()
   
@@ -50,6 +50,61 @@ final class PersistenceController {
         fatalError("Unresolved error \(error), \(error.userInfo)")
       }
     }
+  }
+  
+  lazy var managedObjectContext: NSManagedObjectContext = {
+    self.container.viewContext
+  }()
+  
+  func save(title: String, duration: Double) {
+    let task = TaskEntity(context: managedObjectContext)
+    task.title = title
+    task.duration = duration
+    do {
+      try managedObjectContext.save()
+    } catch {
+      print("Error saving new task \(error)")
+    }
+  }
+  
+  func findTaskBy(id: UUID) -> TaskEntity? {
+    let fetchRequest = NSFetchRequest<TaskEntity>(entityName: "TaskEntity")
+    fetchRequest.predicate = NSPredicate(format: "%K == %@", argumentArray: [#keyPath(TaskEntity.id), id])
+    guard let taskEntity = try? managedObjectContext.fetch(fetchRequest).first else {
+      return nil
+    }
+    return taskEntity
+  }
+  
+  func favorite(task: Task) {
+    guard let taskEntity = findTaskBy(id: task.id) else {
+      return
+    }
+    taskEntity.isFavorite.toggle()
+    try? managedObjectContext.save()
+  }
+  
+  func update(data: [Task], title: String?, duration: Int?, index: Int) {
+    guard let taskEntity = findTaskBy(id: data[index].id) else { return }
+    if let title = title,
+       taskEntity.title != title {
+      taskEntity.title = title
+    }
+    if let duration = duration,
+       taskEntity.duration != Double(duration) {
+      taskEntity.duration = Double(duration)
+    }
+    try? managedObjectContext.save()
+  }
+  
+  func delete(data: [Task], index: Int) {
+    let fetchRequest = NSFetchRequest<TaskEntity>(entityName: "TaskEntity")
+    fetchRequest.predicate = NSPredicate(format: "%K == %@", argumentArray: [#keyPath(TaskEntity.id), data[index].id as CVarArg])
+    guard let taskToDelete = try? managedObjectContext.fetch(fetchRequest).first else {
+      return
+    }
+    managedObjectContext.delete(taskToDelete)
+    try? managedObjectContext.save()
   }
   
   static var preview: PersistenceController {

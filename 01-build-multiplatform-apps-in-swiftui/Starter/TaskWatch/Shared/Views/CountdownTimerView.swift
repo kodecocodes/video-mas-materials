@@ -47,7 +47,6 @@ struct CountdownTimerView: View {
   @ObservedObject var timer: TimerWrapper
   @State var addingNewTask = false
   
-  
   var body: some View {
     VStack {
       Text(String(formatter.string(from: timer.timeRemaining)!))
@@ -78,7 +77,6 @@ struct CountdownTimerView: View {
         }
         .buttonStyle(CircleButtonStyle(bgColor: Color.gray))
       }.padding()
-        .navigationTitle(task.title)
       Spacer()
      
     }

@@ -39,26 +39,8 @@ struct ContentView: View {
   @Environment(\.managedObjectContext) var managedObjectContext
   
   var body: some View {
-    TasksListView() { title, duration in
-      save(title: title, duration: duration)
-    }
+    TasksListView()
   }
-}
-
-
-extension ContentView {
-  
-  func save(title: String, duration: Double) {
-    let task = TaskEntity(context: managedObjectContext)
-    task.title = title
-    task.duration = duration
-    do {
-      try managedObjectContext.save()
-    } catch {
-      print("Error saving new task \(error)")
-    }
-  }
-  
 }
 
 struct ContentView_Previews: PreviewProvider {

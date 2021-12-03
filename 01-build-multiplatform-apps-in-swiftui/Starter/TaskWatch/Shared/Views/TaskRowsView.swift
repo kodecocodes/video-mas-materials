@@ -36,8 +36,7 @@ import SwiftUI
 struct TaskRowsView: DynamicViewContent {
   
   var data: [Task]
-  var onSave: ((String, Double) -> Void)?
-  @Environment(\.managedObjectContext) var managedObjectContext
+  @EnvironmentObject var persistenceController: PersistenceController
   
   var body: some View {
     ForEach(Array(data.enumerated()), id: \.offset) { index, task in
@@ -54,13 +53,7 @@ struct TaskRowsView: DynamicViewContent {
     }
     .onDelete { indexSet in
       indexSet.forEach { index in
-        let fetchRequest = NSFetchRequest<TaskEntity>(entityName: "TaskEntity")
-        fetchRequest.predicate = NSPredicate(format: "%K == %@", argumentArray: [#keyPath(TaskEntity.id), data[index].id as CVarArg])
-        guard let taskToDelete = try? managedObjectContext.fetch(fetchRequest).first                   else {
-          return
-        }
-        managedObjectContext.delete(taskToDelete)
-        try? managedObjectContext.save()
+        persistenceController.delete(data: data, index: index)
       }
     }
   }
