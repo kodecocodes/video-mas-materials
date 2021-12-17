@@ -56,6 +56,7 @@ struct TasksListView: View {
         
         TaskRowsView(data: tasks.map(Task.init))
       }
+
     }
   }
 }
