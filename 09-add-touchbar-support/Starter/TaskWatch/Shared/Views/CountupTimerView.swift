@@ -120,7 +120,3 @@ struct CountupTimerView_Previews: PreviewProvider {
     )
   }
 }
-
-struct StopWatch {
-  
-}

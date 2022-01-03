@@ -50,9 +50,8 @@ struct MenuCommands: Commands {
 
 extension MenuCommands {
   func favorite() {
-    if let task = selectedTask,
-       let unwrappedTask = task {
-      PersistenceController.shared.favorite(task: unwrappedTask)
+    selectedTask?.flatMap {
+      PersistenceController.shared.favorite(task: $0)
     }
   }
 }
